@@ -116,6 +116,9 @@ mkfs/mkfs: mkfs/mkfs.c $K/fs.h $K/param.h
 .PRECIOUS: %.o
 
 UPROGS=\
+	$U/_exectime\
+    $U/_uuname\
+	$U/_mem\
 	$U/_cat\
 	$U/_echo\
 	$U/_forktest\
