@@ -1,20 +1,29 @@
 // history.
 #include "kernel/types.h"
 #include "user/user.h"
+#include "kernel/fcntl.h"
 
 
 int main(char *argv, int argc){
-    // open the file
 
-    // read while there are bits
+    //****************************Using System calls to read file
 
-    // close the file
+    int history_fd;
+    char buf[100];
+    // open sh_history
+    if ((history_fd = open("sh_history", O_CREATE|O_RDWR)) == -1){
+    fprintf(2, "error opening sh_history");
+    }
+    // read while there are bits, read
+    while (read(history_fd, buf, sizeof(buf)))
+    {
+        printf(buf);
+    }
+    close(history_fd);
+    
+    //****************************Using exec cat to read file
 
-    // or 
-
-    // fork 
-        // exec cat sh_history
-
+    /*
     char *args[] = {"cat", "sh_history", 0};
     int pid = fork();
     if (pid == 0){
@@ -25,5 +34,6 @@ int main(char *argv, int argc){
     }
     // wait for child to finish
     wait(&pid);
+    */
     exit(0);
 }
