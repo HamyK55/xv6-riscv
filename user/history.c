@@ -14,11 +14,10 @@ int main(char *argv, int argc){
     if ((history_fd = open("sh_history", O_CREATE|O_RDWR)) == -1){
     fprintf(2, "error opening sh_history");
     }
-    // read while there are bits, read
+    //while there are bits, read
     while (read(history_fd, buf, sizeof(buf)))
-    {
         printf(buf);
-    }
+    
     close(history_fd);
     
     //****************************Using exec cat to read file
