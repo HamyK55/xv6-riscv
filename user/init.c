@@ -36,18 +36,19 @@ main(void)
       exit(1);
     }
 
+    // parent runs this for loop
     for(;;){
       // this call to wait() returns if the shell exits,
-      // or if a parentless process exits.
-      wpid = wait((int *) 0);
+      // or if a parentless process exits. (orphan process)
+      wpid = wait((int *) 0); // 1 cleanup
       if(wpid == pid){
-        // the shell exited; restart it.
+        // the shell exited; restart it. goto outer for loop shell to create it again
         break;
       } else if(wpid < 0){
         printf("init: wait returned an error\n");
         exit(1);
       } else {
-        // it was a parentless process; do nothing.
+        // it was a parentless process; do nothing. ie wait(cleanup) next process
       }
     }
   }
