@@ -40,7 +40,7 @@ main(void)
     for(;;){
       // this call to wait() returns if the shell exits,
       // or if a parentless process exits. (orphan process)
-      wpid = wait((int *) 0); // 1 cleanup
+      wpid = wait((int *) 0); // 1 cleanup, remove memory allocation for child 
       if(wpid == pid){
         // the shell exited; restart it. goto outer for loop shell to create it again
         break;
