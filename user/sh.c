@@ -134,9 +134,9 @@ runcmd(struct cmd *cmd)
 int
 getcmd(char *buf, int nbuf)
 {
-  write(2, "$ ", 2);
+  write(2, "$ ", 2); // 2 means std_out, print shell promt
   memset(buf, 0, nbuf);
-  gets(buf, nbuf);
+  gets(buf, nbuf); // reads one line from std in
   if(buf[0] == 0) // EOF
     return -1;
   return 0;
