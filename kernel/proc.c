@@ -704,6 +704,6 @@ pstate(void){
     //enum procstate state = currentProcPointer->state;
     //char pname[16]= currentProcPointer->parent->name;
 
-    printf("%d %s %s %s\n", currentProcPointer->pid, currentProcPointer->name, currentProcPointer->state, currentProcPointer->parent->name);
+    printf("%d\t%s\t%s\t%s\n", currentProcPointer->pid, currentProcPointer->name, currentProcPointer->state, currentProcPointer->parent->name);
   }
 }
