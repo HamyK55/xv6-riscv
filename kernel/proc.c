@@ -691,19 +691,45 @@ procdump(void)
 void
 pstate(void){
   struct proc *currentProcPointer;
+  int num_proc = 0;
+  char *state = "\0";
   
 
 
-  printf("pid   name    state   parent\n");
+  printf("pid\tname\tstate\tparent\t\n");
   printf("____________________________\n");
   
-  for (currentProcPointer = proc; currentProcPointer < &proc[NPROC]; currentProcPointer++)
+  for (currentProcPointer = proc; (currentProcPointer < &proc[NPROC]) && currentProcPointer->pid > 0; currentProcPointer++)
   {
-    //int pid = currentProcPointer->pid;
-    //char name[16] = currentProcPointer->name;
-    //enum procstate state = currentProcPointer->state;
-    //char pname[16]= currentProcPointer->parent->name;
+    num_proc++;
 
-    printf("%d\t%s\t%s\t%s\n", currentProcPointer->pid, currentProcPointer->name, currentProcPointer->state, currentProcPointer->parent->name);
+    // get the state into readable text
+    switch (currentProcPointer->state)
+    {
+    case SLEEPING:
+      state = "SLEEPING";
+      break;
+    case RUNNABLE:
+      state = "RUNNABLE";
+      break;
+    case RUNNING:
+      state = "RUNNING";
+      break;
+    
+    default:
+      break;
+    }
+
+    // deal with init having no parent
+    char *pname = "\0";
+    if (currentProcPointer->pid == 1){
+      pname = "(init)";
+    }
+    else{
+      pname = currentProcPointer->parent->name;
+    }
+    
+    printf("%d\t%s\t%s\t%s\n",currentProcPointer->pid, currentProcPointer->name, state, pname);
+    
   }
 }
