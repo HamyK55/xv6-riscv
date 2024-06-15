@@ -693,8 +693,6 @@ pstate(void){
   struct proc *currentProcPointer;
   int num_proc = 0;
   char *state = "\0";
-  
-
 
   printf("pid\tname\tstate\tparent\t\n");
   printf("____________________________\n");
@@ -728,14 +726,9 @@ pstate(void){
     else{
       pname = currentProcPointer->parent->name;
     }
-    
     printf("%d\t%s\t%s\t%s\n",currentProcPointer->pid, currentProcPointer->name, state, pname);
-    
-    
   }
   printf("total: %d\n", num_proc);
-
-
   struct cpu *current_cpu;
   int cpu_num = 0;
   
@@ -743,7 +736,6 @@ pstate(void){
   for (current_cpu = cpus; current_cpu < &cpus[NCPU]; current_cpu++)
   {
     cpu_num++;
-    
     if (current_cpu->proc){
       printf("cpu %d: %s\n", cpu_num, current_cpu->proc->name);
     }
