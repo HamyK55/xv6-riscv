@@ -5,9 +5,6 @@
 
 int main(int argc, char *argv[])
 {
-    printf("I will call system call pstate in 1 second...\n");
-    sleep(1);
     pstate();
-   
     exit(0);
 }

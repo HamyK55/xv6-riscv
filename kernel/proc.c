@@ -713,7 +713,7 @@ pstate(void){
       state = "RUNNABLE";
       break;
     case RUNNING:
-      state = "RUNNING";
+      state = "RUNNING ";
       break;
     
     default:
@@ -731,5 +731,23 @@ pstate(void){
     
     printf("%d\t%s\t%s\t%s\n",currentProcPointer->pid, currentProcPointer->name, state, pname);
     
+    
   }
+  printf("total: %d\n", num_proc);
+
+
+  struct cpu *current_cpu;
+  int cpu_num = 0;
+  
+  // print all cpus with a process running on it with relevent data
+  for (current_cpu = cpus; current_cpu < &cpus[NCPU]; current_cpu++)
+  {
+    cpu_num++;
+    
+    if (current_cpu->proc){
+      printf("cpu %d: %s\n", cpu_num, current_cpu->proc->name);
+    }
+  }
+  
+
 }
