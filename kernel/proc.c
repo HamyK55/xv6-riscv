@@ -687,3 +687,23 @@ procdump(void)
     printf("\n");
   }
 }
+// Prints relevent data about all the proccesses in the page table
+void
+pstate(void){
+  struct proc *currentProcPointer;
+  
+
+
+  printf("pid   name    state   parent\n");
+  printf("____________________________\n");
+  
+  for (currentProcPointer = proc; currentProcPointer < &proc[NPROC]; currentProcPointer++)
+  {
+    //int pid = currentProcPointer->pid;
+    //char name[16] = currentProcPointer->name;
+    //enum procstate state = currentProcPointer->state;
+    //char pname[16]= currentProcPointer->parent->name;
+
+    printf("%d %s %s %s\n", currentProcPointer->pid, currentProcPointer->name, currentProcPointer->state, currentProcPointer->parent->name);
+  }
+}
