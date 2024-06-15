@@ -89,3 +89,29 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+
+// print all the processes in states runnable, running, sleeping 
+uint64
+sys_pstate(void)
+{
+  struct proc *currentProcPointer;
+  struct proc *p = myproc();
+
+  pagetable_t pt = p->pagetable;
+
+  printf("pid   name    state   parent\n");
+  printf("____________________________\n");
+  
+  for (currentProcPointer = pt; currentProcPointer < &pt[NPROC]; currentProcPointer++)
+  {
+    int pid = currentProcPointer->pid;
+    char name[16] = currentProcPointer->name;
+    enum procstate state = currentProcPointer->state;
+    char pname[16]= currentProcPointer->parent->name;
+
+    printf("%d %s %s %s\n", pid, name, state, pname);
+  }
+  
+  return 0;
+}

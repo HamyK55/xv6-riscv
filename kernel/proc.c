@@ -375,6 +375,7 @@ exit(int status)
   
   acquire(&p->lock);
 
+  // update pcb with param status, and zombie state
   p->xstate = status;
   p->state = ZOMBIE;
 
@@ -406,8 +407,12 @@ wait(uint64 addr)
 
         havekids = 1;
         if(pp->state == ZOMBIE){
-          // Found one.
+          // Found one. do memory cleanup
+
+          
           pid = pp->pid;
+
+          // rmbr: each page table to unique to a process? virtual memory is not the same as physical storage
           if(addr != 0 && copyout(p->pagetable, addr, (char *)&pp->xstate,
                                   sizeof(pp->xstate)) < 0) {
             release(&pp->lock);
@@ -419,6 +424,7 @@ wait(uint64 addr)
           release(&wait_lock);
           return pid;
         }
+        // not in zombie state, 
         release(&pp->lock);
       }
     }
