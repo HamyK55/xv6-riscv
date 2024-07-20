@@ -22,3 +22,4 @@
 #define SYS_close  21
 #define SYS_pstate 22 // defined sys_pstate number to be accesed in syscall.c
 #define SYS_ps     23 // defined sys_ps number to be accesed in syscall.c
+#define SYS_set    24 // defined sys_ps number to be accesed in syscall.c

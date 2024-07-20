@@ -782,3 +782,16 @@ ps(void){
     printf("%d\t%s\t%s\t%d\n",currentProcPointer->pid, currentProcPointer->name, state, currentProcPointer->priority);
   }
 }
+
+void
+set(int pid, int priority){
+  struct proc *currentProcPointer;
+
+  // go through page table and find proc with pid
+  for (currentProcPointer = proc; (currentProcPointer < &proc[NPROC]) && currentProcPointer->pid > 0; currentProcPointer++)
+  {
+    if (currentProcPointer->pid == pid){
+      currentProcPointer->priority = priority;
+    }
+  }
+}

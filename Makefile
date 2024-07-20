@@ -116,6 +116,7 @@ mkfs/mkfs: mkfs/mkfs.c $K/fs.h $K/param.h
 .PRECIOUS: %.o
 
 UPROGS=\
+	$U/_set\
 	$U/_ps\
 	$U/_pi\
 	$U/_pstate\

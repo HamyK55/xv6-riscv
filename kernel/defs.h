@@ -108,6 +108,7 @@ int             either_copyin(void *dst, int user_src, uint64 src, uint64 len);
 void            procdump(void);
 void            pstate(void); // added so that pstate is accesible anywhere def.h header file is included
 void            ps(void); 
+void            set(int pid, int priority);
 
 // swtch.S
 void            swtch(struct context*, struct context*);

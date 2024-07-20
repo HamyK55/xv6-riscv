@@ -106,3 +106,15 @@ sys_ps(void)
   ps();
   return 0; 
 }
+
+uint64
+sys_set(void)
+{
+  int pid;
+  int priority;
+  argint(0, &pid);
+  argint(1, &priority);
+
+  set(pid, priority);
+  return 0; 
+}

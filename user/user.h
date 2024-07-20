@@ -24,6 +24,7 @@ int sleep(int);
 int uptime(void);
 int pstate(void);
 int ps(void);
+int set(int pid, int priority);
 
 // ulib.c
 int stat(const char*, struct stat*);
