@@ -468,9 +468,10 @@ void scheduler(void) {
                 if(high_prio_proc == 0 || p->priority < high_prio_proc->priority) {
                     if (high_prio_proc != 0) { // if high prio has been initilized already release the lock before updating
                         release(&high_prio_proc->lock);
-                    }
+                    }  
                     high_prio_proc = p; // if high prio proc hasnt been initialized or p has higher priority then update
-                } else {
+                } 
+                else {
                     release(&p->lock);
                 }
             } else {
@@ -491,11 +492,6 @@ void scheduler(void) {
         }
     }
 }
-
-
-
-
-
 
 // Switch to scheduler.  Must hold only p->lock
 // and have changed proc->state. Saves and restores
