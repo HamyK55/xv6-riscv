@@ -454,6 +454,7 @@ scheduler(void)
   struct cpu *c = mycpu();
   
   c->proc = 0;
+  // round robin
   for(;;){
     // Avoid deadlock by ensuring that devices can interrupt.
     intr_on();
@@ -488,7 +489,7 @@ void
 sched(void)
 {
   int intena;
-  struct proc *p = myproc();
+  struct proc *p = myproc(); // pcb
 
   if(!holding(&p->lock))
     panic("sched p->lock");
