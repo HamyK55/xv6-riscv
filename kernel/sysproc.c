@@ -98,3 +98,11 @@ sys_pstate(void)
   pstate();
   return 0; 
 }
+
+// print all the processes in states runnable, running, sleeping 
+uint64
+sys_ps(void)
+{
+  ps();
+  return 0; 
+}

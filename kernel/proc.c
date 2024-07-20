@@ -746,6 +746,39 @@ pstate(void){
       printf("cpu %d: %s\n", cpu_num, current_cpu->proc->name);
     }
   }
-  
+}
 
+
+// Prints pid, name, state, and priority of all the processes on the system
+void
+ps(void){
+  struct proc *currentProcPointer;
+  char *state = "\0";
+
+  printf("pid\tname\tstate\t\tpriority\t\n");
+  printf("___________________________________________\n");
+  
+  // go through page table and print info 
+  for (currentProcPointer = proc; (currentProcPointer < &proc[NPROC]) && currentProcPointer->pid > 0; currentProcPointer++)
+  {
+
+    // get the state into readable text
+    switch (currentProcPointer->state)
+    {
+    case SLEEPING:
+      state = "SLEEPING";
+      break;
+    case RUNNABLE:
+      state = "RUNNABLE";
+      break;
+    case RUNNING:
+      state = "RUNNING ";
+      break;
+    
+    default:
+      break;
+    }
+
+    printf("%d\t%s\t%s\t%d\n",currentProcPointer->pid, currentProcPointer->name, state, currentProcPointer->priority);
+  }
 }
