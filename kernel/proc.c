@@ -449,36 +449,59 @@ wait(uint64 addr)
 //  - swtch to start running that process.
 //  - eventually that process transfers control
 //    via swtch back to the scheduler.
-void
-scheduler(void)
-{
-  struct proc *p;
-  struct cpu *c = mycpu();
-  
-  c->proc = 0;
-  // round robin
-  for(;;){
-    // Avoid deadlock by ensuring that devices can interrupt.
-    intr_on();
+void scheduler(void) {
+    struct proc *p;
+    struct cpu *c = mycpu();
+    struct proc *highest_prio_proc = 0;
+    int highest_priority = -1; // Initialize to minimum possible priority value
+    int start_index = 0;
 
-    for(p = proc; p < &proc[NPROC]; p++) {
-      acquire(&p->lock);
-      if(p->state == RUNNABLE) {
-        // Switch to chosen process.  It is the process's job
-        // to release its lock and then reacquire it
-        // before jumping back to us.
-        p->state = RUNNING;
-        c->proc = p;
-        swtch(&c->context, &p->context);
+    c->proc = 0;
 
-        // Process is done running for now.
-        // It should have changed its p->state before coming back.
-        c->proc = 0;
-      }
-      release(&p->lock);
+    for(;;) {
+        // Avoid deadlock by ensuring that devices can interrupt.
+        intr_on();
+
+        highest_prio_proc = 0;
+        highest_priority = -1;
+
+        // Find the highest priority among all RUNNABLE processes
+        for (int i = 0; i < NPROC; i++) {
+            p = &proc[(start_index + i) % NPROC];
+            acquire(&p->lock);
+            if (p->state == RUNNABLE) {
+                if (p->priority > highest_priority) {
+                    if (highest_prio_proc) {
+                        release(&highest_prio_proc->lock);
+                    }
+                    highest_priority = p->priority;
+                    highest_prio_proc = p;
+                } else if (p->priority == highest_priority) {
+                    release(&p->lock);
+                } else {
+                    release(&p->lock);
+                }
+            } else {
+                release(&p->lock);
+            }
+        }
+
+        if (highest_prio_proc) {
+            // Switch to the selected process.
+            highest_prio_proc->state = RUNNING;
+            c->proc = highest_prio_proc;
+            start_index = (highest_prio_proc - proc + 1) % NPROC;
+            swtch(&c->context, &highest_prio_proc->context);
+
+            // Process is done running for now.
+            // It should have changed its p->state before coming back.
+            c->proc = 0;
+            release(&highest_prio_proc->lock);
+        }
     }
-  }
 }
+
+
 
 // Switch to scheduler.  Must hold only p->lock
 // and have changed proc->state. Saves and restores
