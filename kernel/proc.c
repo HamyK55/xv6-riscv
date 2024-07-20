@@ -451,33 +451,25 @@ wait(uint64 addr)
 //    via swtch back to the scheduler.
 void scheduler(void) {
     struct proc *p;
+    struct proc *high_prio_proc;
     struct cpu *c = mycpu();
-    struct proc *highest_prio_proc = 0;
-    int highest_priority = -1; // Initialize to minimum possible priority value
-    int start_index = 0;
-
     c->proc = 0;
 
-    for(;;) {
+    for(;;){
         // Avoid deadlock by ensuring that devices can interrupt.
         intr_on();
 
-        highest_prio_proc = 0;
-        highest_priority = -1;
+        high_prio_proc = 0;
 
-        // Find the highest priority among all RUNNABLE processes
-        for (int i = 0; i < NPROC; i++) {
-            p = &proc[(start_index + i) % NPROC];
+        for(p = proc; p < &proc[NPROC]; p++) {
             acquire(&p->lock);
-            if (p->state == RUNNABLE) {
-                if (p->priority > highest_priority) {
-                    if (highest_prio_proc) {
-                        release(&highest_prio_proc->lock);
+            if(p->state == RUNNABLE) {
+                // If we haven't selected a process yet, or this process has a higher priority
+                if(high_prio_proc == 0 || p->priority < high_prio_proc->priority) {
+                    if (high_prio_proc != 0) { // if high prio has been initilized already release the lock before updating
+                        release(&high_prio_proc->lock);
                     }
-                    highest_priority = p->priority;
-                    highest_prio_proc = p;
-                } else if (p->priority == highest_priority) {
-                    release(&p->lock);
+                    high_prio_proc = p; // if high prio proc hasnt been initialized or p has higher priority then update
                 } else {
                     release(&p->lock);
                 }
@@ -486,20 +478,22 @@ void scheduler(void) {
             }
         }
 
-        if (highest_prio_proc) {
-            // Switch to the selected process.
-            highest_prio_proc->state = RUNNING;
-            c->proc = highest_prio_proc;
-            start_index = (highest_prio_proc - proc + 1) % NPROC;
-            swtch(&c->context, &highest_prio_proc->context);
+        if (high_prio_proc != 0) {
+            // Switch to the highest priority process.
+            high_prio_proc->state = RUNNING;
+            c->proc = high_prio_proc;
+            swtch(&c->context, &high_prio_proc->context);
 
             // Process is done running for now.
             // It should have changed its p->state before coming back.
             c->proc = 0;
-            release(&highest_prio_proc->lock);
+            release(&high_prio_proc->lock);
         }
     }
 }
+
+
+
 
 
 
