@@ -122,6 +122,7 @@ allocproc(void)
   return 0;
 
 found:
+  p->priority = 0;
   p->pid = allocpid();
   p->state = USED;
 
@@ -168,6 +169,7 @@ freeproc(struct proc *p)
   p->chan = 0;
   p->killed = 0;
   p->xstate = 0;
+  p->priority = 0;
   p->state = UNUSED;
 }
 
