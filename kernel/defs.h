@@ -8,6 +8,7 @@ struct spinlock;
 struct sleeplock;
 struct stat;
 struct superblock;
+struct proc_info;
 
 // bio.c
 void            binit(void);
@@ -109,6 +110,7 @@ void            procdump(void);
 void            pstate(void); // added so that pstate is accesible anywhere def.h header file is included
 void            ps(void); 
 void            set(int pid, int priority);
+int             psinfo(struct proc_info *user_buf);
 
 // swtch.S
 void            swtch(struct context*, struct context*);

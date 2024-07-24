@@ -1,5 +1,13 @@
 struct stat;
 
+struct proc_info
+{
+  char name[16];
+  char pName[16]; // parent name
+  char state[9]; // running, runnable, sleeping
+  int pid;
+};
+
 // system calls
 int fork(void);
 int exit(int) __attribute__((noreturn));
@@ -25,6 +33,7 @@ int uptime(void);
 int pstate(void);
 int ps(void);
 int set(int pid, int priority);
+int psinfo(struct proc_info *user_buf);
 
 // ulib.c
 int stat(const char*, struct stat*);

@@ -104,6 +104,7 @@ extern uint64 sys_close(void);
 extern uint64 sys_pstate(void);
 extern uint64 sys_ps(void);
 extern uint64 sys_set(void);
+extern uint64 sys_psinfo(void);
 
 // An array mapping syscall numbers from syscall.h
 // to the function that handles the system call.
@@ -132,6 +133,7 @@ static uint64 (*syscalls[])(void) = {
 [SYS_pstate]  sys_pstate,
 [SYS_ps]      sys_ps,
 [SYS_set]     sys_set,
+[SYS_psinfo]  sys_psinfo,
 };
 
 void

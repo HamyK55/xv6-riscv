@@ -39,3 +39,4 @@ entry("uptime");
 entry("pstate");
 entry("ps");
 entry("set");
+entry("psinfo");

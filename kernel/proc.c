@@ -808,3 +808,82 @@ set(int pid, int priority){
     }
   }
 }
+
+
+// sends relevent data about all the proccesses in the page table to userspace
+int
+psinfo(struct proc_info *user_buf){
+  struct proc *currentProcPointer;
+  int num_proc = 0;
+  char *state = "\0";
+  struct cpu *current_cpu;
+  int cpu_num = 0;
+
+  struct proc_info kernel_proc_buf[NPROC];
+
+  printf("pid\tname\tstate\t\tparent\t\n");
+  printf("___________________________________________\n");
+  
+  // go through page table and print info 
+  for (currentProcPointer = proc; (currentProcPointer < &proc[NPROC]) && currentProcPointer->pid > 0; currentProcPointer++)
+  {
+    state = "\0";
+    // get the state into readable text
+    switch (currentProcPointer->state)
+    {
+    case SLEEPING:
+      state = "SLEEPING";
+      break;
+    case RUNNABLE:
+      state = "RUNNABLE";
+      break;
+    case RUNNING:
+      state = "RUNNING ";
+      break;
+    
+    default:
+      break;
+    }
+
+    // deal with init having no parent
+    char *pname = "\0";
+    if (currentProcPointer->pid == 1){
+      pname = "(init)";
+    }
+    else{
+      pname = currentProcPointer->parent->name;
+    }
+
+    
+    // store proc info into my kernel_proc_buffer
+    //printf("%d\t%s\t%s\t%s\n",currentProcPointer->pid, currentProcPointer->name, state, pname);
+
+    kernel_proc_buf[num_proc].pid = currentProcPointer->pid;
+    strncpy(kernel_proc_buf[num_proc].name, currentProcPointer->name, sizeof(proc->name));
+    strncpy(kernel_proc_buf[num_proc].pName, pname, sizeof(proc->name));
+    strncpy(kernel_proc_buf[num_proc].state, state, sizeof(proc->state));
+
+    num_proc++;
+  }
+
+  // copy kernel data to userspace
+  struct proc *p = myproc(); // Get the current process
+  pagetable_t pagetable = p->pagetable; // Access the page table of the process
+
+  if (copyout(pagetable, (uint64)user_buf, (char *)kernel_proc_buf, num_proc * sizeof(struct proc_info)) != 0) {
+      return -1;
+  }
+
+
+
+  // print all cpus with a process running on it with relevent data
+  for (current_cpu = cpus; current_cpu < &cpus[NCPU]; current_cpu++)
+  {
+    cpu_num++;
+    if (current_cpu->proc){ // check if process exists on cpu
+      printf("cpu %d: %s\n", cpu_num, current_cpu->proc->name);
+    }
+  }
+
+  return num_proc;
+}

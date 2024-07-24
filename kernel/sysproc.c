@@ -118,3 +118,13 @@ sys_set(void)
   set(pid, priority);
   return 0; 
 }
+
+uint64
+sys_psinfo(void)
+{
+  struct proc_info *user_buf;
+  argaddr(0, (uint64*)&user_buf);
+
+  psinfo(user_buf);
+  return 0; 
+}
