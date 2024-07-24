@@ -125,6 +125,6 @@ sys_psinfo(void)
   struct proc_info *user_buf;
   argaddr(0, (uint64*)&user_buf);
 
-  psinfo(user_buf);
-  return 0; 
+  return psinfo(user_buf);
+   
 }

@@ -11,12 +11,13 @@ int main(int argc, char *argv[])
     int num_proc;
     num_proc = psinfo(user_buf);
 
-    // Print the process information
+    //Print the process information
     printf("pid\tname\tstate\t\tparent\n");
     printf("___________________________________________\n");
     for (int i = 0; i < num_proc; i++) {
         printf("%d\t%s\t%s\t%s\n", user_buf[i].pid, user_buf[i].name, user_buf[i].state, user_buf[i].pName);
     }
+
 
     printf("Total processes: %d\n", num_proc);
     exit(0);

@@ -821,8 +821,8 @@ psinfo(struct proc_info *user_buf){
 
   struct proc_info kernel_proc_buf[NPROC];
 
-  printf("pid\tname\tstate\t\tparent\t\n");
-  printf("___________________________________________\n");
+  //printf("pid\tname\tstate\t\tparent\t\n");
+  //printf("___________________________________________\n");
   
   // go through page table and print info 
   for (currentProcPointer = proc; (currentProcPointer < &proc[NPROC]) && currentProcPointer->pid > 0; currentProcPointer++)
@@ -861,29 +861,37 @@ psinfo(struct proc_info *user_buf){
     kernel_proc_buf[num_proc].pid = currentProcPointer->pid;
     strncpy(kernel_proc_buf[num_proc].name, currentProcPointer->name, sizeof(proc->name));
     strncpy(kernel_proc_buf[num_proc].pName, pname, sizeof(proc->name));
-    strncpy(kernel_proc_buf[num_proc].state, state, sizeof(proc->state));
+    strncpy(kernel_proc_buf[num_proc].state, state, sizeof(state));
 
     num_proc++;
   }
+
+  /*
+  for (int i = 0; i < num_proc; i++) {
+        printf("%d\t%s\t%s\t%s\n", kernel_proc_buf[i].pid, kernel_proc_buf[i].name, kernel_proc_buf[i].state, kernel_proc_buf[i].pName);
+    }
+  */
 
   // copy kernel data to userspace
   struct proc *p = myproc(); // Get the current process
   pagetable_t pagetable = p->pagetable; // Access the page table of the process
 
   if (copyout(pagetable, (uint64)user_buf, (char *)kernel_proc_buf, num_proc * sizeof(struct proc_info)) != 0) {
+      printf("err");
       return -1;
   }
 
 
-
+  
   // print all cpus with a process running on it with relevent data
   for (current_cpu = cpus; current_cpu < &cpus[NCPU]; current_cpu++)
   {
     cpu_num++;
     if (current_cpu->proc){ // check if process exists on cpu
-      printf("cpu %d: %s\n", cpu_num, current_cpu->proc->name);
+      //printf("cpu %d: %s\n", cpu_num, current_cpu->proc->name);
     }
   }
+  
 
   return num_proc;
 }
