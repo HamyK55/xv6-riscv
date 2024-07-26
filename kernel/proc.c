@@ -707,7 +707,7 @@ procdump(void)
 void
 pstate(void){
   struct proc *currentProcPointer;
-  int num_proc = 0;
+  int proc_num = 0;
   char *state = "\0";
   struct cpu *current_cpu;
   int cpu_num = 0;
@@ -718,7 +718,7 @@ pstate(void){
   // go through page table and print info 
   for (currentProcPointer = proc; (currentProcPointer < &proc[NPROC]) && currentProcPointer->pid > 0; currentProcPointer++)
   {
-    num_proc++;
+    proc_num++;
 
     // get the state into readable text
     switch (currentProcPointer->state)
@@ -748,7 +748,7 @@ pstate(void){
 
     printf("%d\t%s\t%s\t%s\n",currentProcPointer->pid, currentProcPointer->name, state, pname);
   }
-  printf("Total processes: %d\n", num_proc);
+  printf("Total processes: %d\n", proc_num);
 
 
   // print all cpus with a process running on it with relevent data
@@ -812,17 +812,17 @@ set(int pid, int priority){
 
 // sends relevent data about all the proccesses in the page table to userspace
 int
-psinfo(struct proc_info *user_buf){
+psinfo(struct proc_info *user_buf, struct cpu_info *cpu_user_buf, struct proc_cpu_num *user_num_buf){
   struct proc *currentProcPointer;
-  int num_proc = 0;
+  int proc_num = 0;
   char *state = "\0";
   struct cpu *current_cpu;
   int cpu_num = 0;
 
-  struct proc_info kernel_proc_buf[NPROC];
+  struct proc_cpu_num kernel_num_buf[2];
 
-  //printf("pid\tname\tstate\t\tparent\t\n");
-  //printf("___________________________________________\n");
+  struct proc_info kernel_proc_buf[NPROC];
+  struct cpu_info kernel_cpu_buf[NCPU];
   
   // go through page table and print info 
   for (currentProcPointer = proc; (currentProcPointer < &proc[NPROC]) && currentProcPointer->pid > 0; currentProcPointer++)
@@ -838,7 +838,7 @@ psinfo(struct proc_info *user_buf){
       state = "RUNNABLE";
       break;
     case RUNNING:
-      state = "RUNNING ";
+      state = "RUNNING\t";
       break;
     
     default:
@@ -858,40 +858,46 @@ psinfo(struct proc_info *user_buf){
     // store proc info into my kernel_proc_buffer
     //printf("%d\t%s\t%s\t%s\n",currentProcPointer->pid, currentProcPointer->name, state, pname);
 
-    kernel_proc_buf[num_proc].pid = currentProcPointer->pid;
-    strncpy(kernel_proc_buf[num_proc].name, currentProcPointer->name, sizeof(proc->name));
-    strncpy(kernel_proc_buf[num_proc].pName, pname, sizeof(proc->name));
-    strncpy(kernel_proc_buf[num_proc].state, state, sizeof(state));
+    kernel_proc_buf[proc_num].pid = currentProcPointer->pid;
+    strncpy(kernel_proc_buf[proc_num].name, currentProcPointer->name, sizeof(proc->name));
+    strncpy(kernel_proc_buf[proc_num].pName, pname, sizeof(proc->name));
+    strncpy(kernel_proc_buf[proc_num].state, state, sizeof(state));
 
-    num_proc++;
+    proc_num++;
   }
+  kernel_num_buf[0].num = proc_num;
 
-  /*
-  for (int i = 0; i < num_proc; i++) {
-        printf("%d\t%s\t%s\t%s\n", kernel_proc_buf[i].pid, kernel_proc_buf[i].name, kernel_proc_buf[i].state, kernel_proc_buf[i].pName);
+  
+
+
+  // print all cpus with a process running on it with relevent data
+  for (current_cpu = cpus; current_cpu < &cpus[NCPU]; current_cpu++)
+  {
+    if (current_cpu->proc){ // check if process exists on cpu
+      //printf("cpu %d: %s\n", cpu_num, current_cpu->proc->name);
+      kernel_cpu_buf[cpu_num].cpu_num = cpu_num;
+      strncpy(kernel_cpu_buf[cpu_num].name, current_cpu->proc->name, sizeof(proc->name));
+      cpu_num++;
     }
-  */
+  }
+  kernel_num_buf[1].num = cpu_num; 
 
   // copy kernel data to userspace
   struct proc *p = myproc(); // Get the current process
   pagetable_t pagetable = p->pagetable; // Access the page table of the process
 
-  if (copyout(pagetable, (uint64)user_buf, (char *)kernel_proc_buf, num_proc * sizeof(struct proc_info)) != 0) {
-      printf("err");
-      return -1;
+  if (copyout(pagetable, (uint64)user_buf, (char *)kernel_proc_buf, proc_num * sizeof(struct proc_info)) != 0) {
+      printf("err on copyout");
   }
 
-
-  
-  // print all cpus with a process running on it with relevent data
-  for (current_cpu = cpus; current_cpu < &cpus[NCPU]; current_cpu++)
-  {
-    cpu_num++;
-    if (current_cpu->proc){ // check if process exists on cpu
-      //printf("cpu %d: %s\n", cpu_num, current_cpu->proc->name);
-    }
+  if (copyout(pagetable, (uint64)cpu_user_buf, (char *)kernel_cpu_buf, cpu_num * sizeof(struct cpu_info)) != 0) {
+      printf("err on copyout");
   }
-  
 
-  return num_proc;
+  if (copyout(pagetable, (uint64)user_num_buf, (char *)kernel_num_buf, 2 * sizeof(struct proc_cpu_num)) != 0) {
+      printf("err on copyout");
+  }
+
+  return proc_num;
+  
 }

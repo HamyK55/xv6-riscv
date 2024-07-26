@@ -122,9 +122,14 @@ sys_set(void)
 uint64
 sys_psinfo(void)
 {
-  struct proc_info *user_buf;
-  argaddr(0, (uint64*)&user_buf);
+  struct proc_info *proc_user_buf;
+  struct cpu_info *cpu_user_buf;
+  struct proc_cpu_num *user_num_buf;
+  argaddr(0, (uint64*)&proc_user_buf);
+  argaddr(1, (uint64*)&cpu_user_buf);
+  argaddr(2, (uint64*)&user_num_buf);
 
-  return psinfo(user_buf);
+
+  return psinfo(proc_user_buf, cpu_user_buf, user_num_buf);
    
 }

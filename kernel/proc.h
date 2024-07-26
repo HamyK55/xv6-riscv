@@ -26,6 +26,12 @@ struct cpu {
   int intena;                 // Were interrupts enabled before push_off()?
 };
 
+struct cpu_info
+{
+  char name[16]; // name of process running on cpu
+  int cpu_num;
+};
+
 extern struct cpu cpus[NCPU];
 
 // per-process data for the trap handling code in trampoline.S.
@@ -115,3 +121,8 @@ struct proc_info
   int pid;
 };
 
+
+struct proc_cpu_num
+{
+  int num;
+};

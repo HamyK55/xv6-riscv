@@ -8,6 +8,17 @@ struct proc_info
   int pid;
 };
 
+struct cpu_info
+{
+  char name[16]; // name of process running on cpu
+  int cpu_num;
+};
+
+struct proc_cpu_num
+{
+  int num;
+};
+
 // system calls
 int fork(void);
 int exit(int) __attribute__((noreturn));
@@ -33,7 +44,7 @@ int uptime(void);
 int pstate(void);
 int ps(void);
 int set(int pid, int priority);
-int psinfo(struct proc_info *user_buf);
+int psinfo(struct proc_info *user_buf, struct cpu_info *cpu_user_buf, struct proc_cpu_num *user_proc_cpu_num);
 
 // ulib.c
 int stat(const char*, struct stat*);
